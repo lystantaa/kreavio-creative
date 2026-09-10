@@ -14,3 +14,6 @@ Thumbs.db
 # Temporary & Log files
 *.log
 scratch/
+
+# Antigravity Skills & Agents
+.agents/

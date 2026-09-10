@@ -4,10 +4,16 @@
 // Konfigurasi Utama Website Kreavio Creative
 // =====================================================================
 
-// 1. Memulai Session jika belum berjalan (dengan proteksi cookie HttpOnly)
+// 1. Memulai Session jika belum berjalan (dengan proteksi cookie HttpOnly & SameSite Lax)
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_httponly', '1');
     ini_set('session.use_only_cookies', '1');
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -208,6 +214,30 @@ function display_flash() {
                 {$msg}
                 <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>
               </div>";
+    }
+}
+
+/**
+ * CSRF Protection Helpers (Standar Keamanan ECC)
+ */
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field() {
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
+}
+
+function verify_csrf() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $token = $_POST['csrf_token'] ?? '';
+        if (empty($token) || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+            http_response_code(403);
+            die('Akses ditolak: Validasi CSRF Token gagal.');
+        }
     }
 }
 
