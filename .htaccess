@@ -1,0 +1,31 @@
+# =====================================================================
+# KREAVIO CREATIVE - APACHE SECURITY CONFIGURATION (.htaccess)
+# =====================================================================
+
+# 1. Matikan Directory Browsing / Indexing (Cegah pengunjung melihat daftar isi folder)
+Options -Indexes
+
+# 2. Lindungi Berkas Sensitif (.env, database .sql, markdown, logs, git)
+<FilesMatch "^(\.env|\.git|\.gitignore)|(\.(sql|md|log|bak|ini|jsonl))$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 3. Lindungi Folder Internal (config & includes) dari Akses Langsung via URL Browser
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(config|includes)/ - [F,L]
+</IfModule>
+
+# 4. Header Keamanan Web (Mencegah Clickjacking, MIME Sniffing, dan XSS)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
