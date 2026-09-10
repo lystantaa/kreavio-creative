@@ -139,30 +139,75 @@ main {
     border-bottom: 1px solid var(--border-color);
 }
 
+h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+}
+
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+.text-gradient-primary {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
+}
+
+[data-bs-theme="dark"] .text-gradient-primary {
+    background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-section {
+    position: relative;
+    background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 10% 85%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+                #ffffff;
+    padding: 4.5rem 0 4rem;
+    overflow: hidden;
+}
+
+[data-bs-theme="dark"] .hero-section {
+    background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 10% 85%, rgba(37, 99, 235, 0.06) 0%, transparent 45%),
+                #0f172a;
+}
+
 .hero-badge {
-    display: inline-block;
-    padding: 0.35rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--primary-color);
-    background-color: #dbeafe;
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
     border-radius: 9999px;
     margin-bottom: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-bs-theme="dark"] .hero-badge {
+    background-color: rgba(37, 99, 235, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
 }
 
 .hero-title {
-    font-size: 2.75rem;
+    font-size: 2.85rem;
     font-weight: 800;
-    line-height: 1.2;
+    line-height: 1.18;
     color: var(--secondary-color);
-    letter-spacing: -1px;
+    letter-spacing: -0.03em;
 }
 
 .hero-subtitle {
     font-size: 1.15rem;
-    line-height: 1.6;
+    line-height: 1.65;
     color: var(--text-muted);
-    max-width: 600px;
+    max-width: 620px;
 }
 
 /* Cards */
@@ -170,7 +215,7 @@ main {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
     background-color: #ffffff;
 }
 
@@ -179,12 +224,34 @@ main {
 }
 
 .card-service {
-    transition: all 0.25s ease;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
     overflow: hidden;
+    background: #ffffff;
 }
 
 .card-service:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px -8px rgba(37, 99, 235, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    border-color: #93c5fd;
+}
+
+.card-service .card-img-wrap {
+    overflow: hidden;
+    height: 185px;
+    background-color: #f8fafc;
+}
+
+.card-service .card-img-top {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-service:hover .card-img-top {
+    transform: scale(1.05);
 }
 
 .service-icon-wrapper {
@@ -202,40 +269,97 @@ main {
 
 /* Feature Box */
 .feature-box {
-    padding: 2rem 1.5rem;
+    padding: 2.25rem 1.75rem;
     background: #ffffff;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: 1rem;
     text-align: center;
     height: 100%;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08);
+    border-color: #bfdbfe;
 }
 
 .feature-icon {
-    width: 56px;
-    height: 56px;
-    background-color: #eff6ff;
-    color: var(--primary-color);
-    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.65rem;
+    margin-bottom: 1.25rem;
+    transition: transform 0.25s ease;
+}
+
+.feature-box:hover .feature-icon {
+    transform: scale(1.08) rotate(3deg);
 }
 
 /* Steps / Cara Pemesanan */
+.step-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    text-align: center;
+}
+
+.step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+}
+
 .step-number {
-    width: 44px;
-    height: 44px;
-    background-color: var(--primary-color);
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #38bdf8 100%);
     color: #ffffff;
-    border-radius: 50%;
+    border-radius: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+}
+
+/* Admin Modern Stat Cards (ECC Design System) */
+.admin-stat-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.25rem 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08);
+}
+
+.admin-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
 }
 
 /* Buttons */
@@ -499,10 +623,17 @@ footer a:hover {
     color: #93c5fd;
 }
 
-[data-bs-theme="dark"] .card {
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .card-service,
+[data-bs-theme="dark"] .admin-stat-card,
+[data-bs-theme="dark"] .step-card {
     background-color: #1e293b !important;
     border-color: #334155 !important;
     color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .card-service .card-img-wrap {
+    background-color: #0f172a;
 }
 
 [data-bs-theme="dark"] .card-header {
