@@ -54,6 +54,8 @@ function resolve_date_range($period, $startInput = '', $endInput = '') {
             ];
         case 'month':
             return [date('Y-m-01'), date('Y-m-t')];
+        case 'year':
+            return [date('Y-01-01'), date('Y-12-31')];
         case 'custom':
             $start = $startInput ?: $today;
             $end   = $endInput ?: $today;

@@ -75,6 +75,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
                         <option value="today" <?= $period === 'today' ? 'selected' : '' ?>>Hari Ini</option>
                         <option value="week" <?= $period === 'week' ? 'selected' : '' ?>>Minggu Ini</option>
                         <option value="month" <?= $period === 'month' ? 'selected' : '' ?>>Bulan Ini</option>
+                        <option value="year" <?= $period === 'year' ? 'selected' : '' ?>>Tahun Ini (Tahunan)</option>
                         <option value="custom" <?= $period === 'custom' ? 'selected' : '' ?>>Rentang Tanggal Kustom</option>
                     </select>
                 </div>
