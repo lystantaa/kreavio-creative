@@ -1,64 +1,102 @@
 <?php
 // =====================================================================
-// FILE: admin/invoice.php
-// Halaman Cetak Invoice per Transaksi (Admin Panel)
+// FILE: customer/invoice.php
+// Halaman Cetak & Unduh Invoice PDF Customer Kreavio Creative
 // Mengikuti Format Standar Resmi & Bersih (Pas 1 Halaman A4)
 // =====================================================================
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 
-require_admin();
-$admin = current_admin($pdo);
+// Pastikan customer login atau admin
+if (!is_logged_in() && !isset($_SESSION['admin_id'])) {
+    require_login();
+}
+
+$user = is_logged_in() ? current_user($pdo) : null;
+$isAdmin = isset($_SESSION['admin_id']);
 
 $orderId     = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $orderNumber = trim($_GET['order_number'] ?? '');
 
 if ($orderId <= 0 && empty($orderNumber)) {
     set_flash('danger', 'ID atau Nomor Pesanan tidak valid.');
-    redirect('admin/orders.php');
+    redirect('customer/orders.php');
 }
 
 // Ambil data order + customer + layanan
-if ($orderId > 0) {
-    $stmt = $pdo->prepare("
-        SELECT o.*,
-               u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
-               s.name  AS service_name, s.duration AS service_duration
-        FROM orders o
-        JOIN users u ON o.user_id = u.id
-        JOIN services s ON o.service_id = s.id
-        WHERE o.id = ?
-    ");
-    $stmt->execute([$orderId]);
-} else {
-    $stmt = $pdo->prepare("
-        SELECT o.*,
-               u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
-               s.name  AS service_name, s.duration AS service_duration
-        FROM orders o
-        JOIN users u ON o.user_id = u.id
-        JOIN services s ON o.service_id = s.id
-        WHERE o.order_number = ?
-    ");
-    $stmt->execute([$orderNumber]);
-}
-$order = $stmt->fetch();
+try {
+    if ($isAdmin) {
+        if ($orderId > 0) {
+            $stmt = $pdo->prepare("
+                SELECT o.*,
+                       u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
+                       s.name  AS service_name, s.duration AS service_duration
+                FROM orders o
+                JOIN users u ON o.user_id = u.id
+                JOIN services s ON o.service_id = s.id
+                WHERE o.id = ?
+            ");
+            $stmt->execute([$orderId]);
+        } else {
+            $stmt = $pdo->prepare("
+                SELECT o.*,
+                       u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
+                       s.name  AS service_name, s.duration AS service_duration
+                FROM orders o
+                JOIN users u ON o.user_id = u.id
+                JOIN services s ON o.service_id = s.id
+                WHERE o.order_number = ?
+            ");
+            $stmt->execute([$orderNumber]);
+        }
+    } else {
+        if ($orderId > 0) {
+            $stmt = $pdo->prepare("
+                SELECT o.*,
+                       u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
+                       s.name  AS service_name, s.duration AS service_duration
+                FROM orders o
+                JOIN users u ON o.user_id = u.id
+                JOIN services s ON o.service_id = s.id
+                WHERE o.id = ? AND o.user_id = ?
+            ");
+            $stmt->execute([$orderId, $user['id']]);
+        } else {
+            $stmt = $pdo->prepare("
+                SELECT o.*,
+                       u.name  AS customer_name, u.email AS customer_email, u.phone AS customer_phone,
+                       s.name  AS service_name, s.duration AS service_duration
+                FROM orders o
+                JOIN users u ON o.user_id = u.id
+                JOIN services s ON o.service_id = s.id
+                WHERE o.order_number = ? AND o.user_id = ?
+            ");
+            $stmt->execute([$orderNumber, $user['id']]);
+        }
+    }
+    $order = $stmt->fetch();
 
-if (!$order) {
-    set_flash('danger', 'Pesanan tidak ditemukan.');
-    redirect('admin/orders.php');
-}
+    if (!$order) {
+        set_flash('danger', 'Pesanan tidak ditemukan.');
+        redirect('customer/orders.php');
+    }
 
-// Ambil data pembayaran terakhir (jika ada)
-$payStmt = $pdo->prepare("SELECT * FROM payments WHERE order_id = ? ORDER BY created_at DESC LIMIT 1");
-$payStmt->execute([$order['id']]);
-$payment = $payStmt->fetch();
+    // Ambil data pembayaran terakhir (jika ada)
+    $payStmt = $pdo->prepare("SELECT * FROM payments WHERE order_id = ? ORDER BY created_at DESC LIMIT 1");
+    $payStmt->execute([$order['id']]);
+    $payment = $payStmt->fetch();
+
+} catch (PDOException $e) {
+    set_flash('danger', 'Terjadi kesalahan basis data: ' . $e->getMessage());
+    redirect('customer/orders.php');
+}
 
 $invoiceNumber = 'INV-' . $order['order_number'];
 $invoiceDate   = $payment['paid_at'] ?? $order['updated_at'] ?? $order['created_at'];
 
+// Label metode pembayaran
 $methodNames = [
     'mode_cepat'        => 'Pembayaran Mode Cepat',
     'qris'              => 'QRIS (E-Wallet & Mobile Banking)',
@@ -74,6 +112,7 @@ $methodNames = [
 ];
 $rawMethod = $payment['payment_type'] ?? '';
 $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 'paid' ? 'Midtrans / Online Transfer' : 'Menunggu Pembayaran');
+$backUrl = base_url('customer/order-detail.php?id=' . $order['id']);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -81,7 +120,13 @@ $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice <?= e($invoiceNumber) ?> - Kreavio Creative</title>
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?= asset_url('images/logo.svg') ?>">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= asset_url('css/style.css?v=' . filemtime(__DIR__ . '/../assets/css/style.css')) ?>">
@@ -109,11 +154,9 @@ $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 
                     if (theme === 'dark') {
                         icon.className = 'bi bi-sun text-warning';
                         btn.setAttribute('title', 'Ganti ke Mode Terang');
-                        btn.setAttribute('aria-label', 'Ganti ke Mode Terang');
                     } else {
                         icon.className = 'bi bi-moon';
                         btn.setAttribute('title', 'Ganti ke Mode Gelap');
-                        btn.setAttribute('aria-label', 'Ganti ke Mode Gelap');
                     }
                 }
             });
@@ -147,7 +190,7 @@ $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 
             padding: 8px 12px;
         }
 
-        /* ===== DARK THEME SUPPORT (SESUAI ADMIN DASHBOARD) ===== */
+        /* ===== DARK THEME SUPPORT (SESUAI DASHBOARD CUSTOMER & ADMIN) ===== */
         [data-bs-theme="dark"] body {
             background-color: #0f172a !important;
             color: #f8fafc !important;
@@ -253,13 +296,10 @@ $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 
     <!-- Tombol Navigasi & Print (Hanya tampil di layar browser, tersembunyi saat cetak) -->
     <div class="container no-print pt-4" style="max-width: 820px;">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="<?= base_url('admin/order-detail.php?id=' . $order['id']) ?>" class="btn btn-outline-secondary">
+            <a href="<?= $backUrl ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Detail Pesanan
             </a>
             <div class="d-flex gap-2 align-items-center">
-                <a href="<?= base_url('admin/sales-report.php') ?>" class="btn btn-outline-primary">
-                    <i class="bi bi-graph-up me-1"></i> Rekap Penjualan
-                </a>
                 <button type="button" class="btn btn-outline-secondary theme-toggle-btn shadow-sm" onclick="toggleTheme()" title="Ganti Mode Tema" aria-label="Ganti Mode Tema">
                     <i class="bi bi-moon"></i>
                 </button>
@@ -271,7 +311,7 @@ $paymentMethodLabel = $methodNames[$rawMethod] ?? ($order['payment_status'] === 
     </div>
 
     <!-- AREA INVOICE RESMI -->
-    <div class="invoice-box" id="admin-invoice-content">
+    <div class="invoice-box" id="invoice-content">
         <!-- Header Invoice -->
         <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
             <div>

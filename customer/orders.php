@@ -99,6 +99,10 @@ require_once __DIR__ . '/../includes/header.php';
                                             <a href="<?= base_url('checkout.php?order_number=' . urlencode($ord['order_number'])) ?>" class="btn btn-sm btn-warning me-1">
                                                 <i class="bi bi-wallet2 me-1"></i> Bayar
                                             </a>
+                                        <?php else: ?>
+                                            <a href="<?= base_url('customer/invoice.php?id=' . $ord['id']) ?>" target="_blank" class="btn btn-sm btn-outline-success me-1" title="Cetak Invoice PDF">
+                                                <i class="bi bi-file-earmark-pdf"></i> Invoice
+                                            </a>
                                         <?php endif; ?>
                                         <a href="<?= base_url('customer/order-detail.php?id=' . $ord['id']) ?>" class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-eye me-1"></i> Detail

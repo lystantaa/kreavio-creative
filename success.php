@@ -116,6 +116,9 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
 
                 <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                    <a href="<?= base_url('customer/invoice.php?order_number=' . urlencode($order['order_number'])) ?>" target="_blank" class="btn btn-outline-success px-4">
+                        <i class="bi bi-printer me-1"></i> Cetak Invoice (PDF)
+                    </a>
                     <a href="<?= base_url('customer/order-detail.php?id=' . $order['id']) ?>" class="btn btn-primary px-4">
                         <i class="bi bi-eye me-1"></i> Lihat Status Pesanan
                     </a>

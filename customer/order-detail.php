@@ -84,6 +84,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <a href="<?= base_url('checkout.php?order_number=' . urlencode($order['order_number'])) ?>" class="btn btn-warning fw-bold">
                     <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
                 </a>
+            <?php else: ?>
+                <a href="<?= base_url('customer/invoice.php?id=' . $order['id']) ?>" target="_blank" class="btn btn-success fw-semibold">
+                    <i class="bi bi-printer me-1"></i> Cetak Invoice (PDF)
+                </a>
             <?php endif; ?>
             <a href="<?= base_url('customer/orders.php') ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
@@ -250,9 +254,12 @@ require_once __DIR__ . '/../includes/header.php';
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="alert alert-success text-center mt-3 mb-0 py-2 small">
+                    <div class="alert alert-success text-center mt-3 mb-2 py-2 small">
                         <i class="bi bi-check-circle-fill me-1"></i> Pembayaran Telah Lunas
                     </div>
+                    <a href="<?= base_url('customer/invoice.php?id=' . $order['id']) ?>" target="_blank" class="btn btn-outline-success w-100">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Cetak / Unduh Invoice PDF
+                    </a>
                 <?php endif; ?>
             </div>
 
