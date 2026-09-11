@@ -246,19 +246,19 @@ require_once __DIR__ . '/../includes/admin-header.php';
                             <label for="order_status" class="form-label fw-semibold">Status Pengerjaan Order</label>
                             <select class="form-select form-select-lg" id="order_status" name="order_status" required>
                                 <option value="pending_payment" <?= ($order['order_status'] === 'pending_payment') ? 'selected' : '' ?>>
-                                    1. pending_payment (Menunggu Pembayaran)
+                                    Menunggu Pembayaran
                                 </option>
                                 <option value="menunggu_proses" <?= ($order['order_status'] === 'menunggu_proses') ? 'selected' : '' ?>>
-                                    2. menunggu_proses (Menunggu Dikerjakan)
+                                    Menunggu Diproses
                                 </option>
                                 <option value="sedang_dikerjakan" <?= ($order['order_status'] === 'sedang_dikerjakan') ? 'selected' : '' ?>>
-                                    3. sedang_dikerjakan (Sedang Dikerjakan)
+                                    Sedang Dikerjakan
                                 </option>
                                 <option value="selesai" <?= ($order['order_status'] === 'selesai') ? 'selected' : '' ?>>
-                                    4. selesai (Pesanan Selesai)
+                                    Selesai
                                 </option>
                                 <option value="cancelled" <?= ($order['order_status'] === 'cancelled') ? 'selected' : '' ?>>
-                                    5. cancelled (Pesanan Dibatalkan)
+                                    Dibatalkan
                                 </option>
                             </select>
                         </div>
@@ -268,10 +268,10 @@ require_once __DIR__ . '/../includes/admin-header.php';
                             <label for="payment_status" class="form-label fw-semibold">Status Pembayaran</label>
                             <select class="form-select" id="payment_status" name="payment_status" required>
                                 <option value="pending_payment" <?= ($order['payment_status'] === 'pending_payment') ? 'selected' : '' ?>>
-                                    pending_payment (Belum Bayar)
+                                    Belum Bayar
                                 </option>
                                 <option value="paid" <?= ($order['payment_status'] === 'paid') ? 'selected' : '' ?>>
-                                    paid (Lunas)
+                                    Lunas
                                 </option>
                             </select>
                         </div>

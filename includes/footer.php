@@ -69,9 +69,6 @@
                 <div>
                     &copy; <?= date('Y') ?> <strong>Kreavio Creative</strong>. All rights reserved.
                 </div>
-                <div class="text-secondary small">
-                    Tugas Mata Kuliah Digital Entrepreneurship &bull; Simple & Stable Web Application
-                </div>
             </div>
         </div>
     </footer>
